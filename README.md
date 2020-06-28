@@ -8,7 +8,7 @@ The following modules are required and the script runs in set to run *Python3*.
 - sys
 - os
 
-* Example:
+### Example:
 ```
 pokemon-duels % ./pokemon.py Klonoa Red
 ========================
