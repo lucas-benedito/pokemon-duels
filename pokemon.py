@@ -25,12 +25,13 @@ if checkQuit:
     sys.exit(1)
 
 # main
+count=6
 battle_type=['single', 'doubles']
 print("========================\nBattle Type: ",random.choice(battle_type))
 file = open("options.txt", "r")
 content = file.read()
 pokemon_dict = ast.literal_eval(content)
-lists = random.sample(list(pokemon_dict), 2)
+lists = random.sample(list(pokemon_dict), count)
 
 print("========================\n" + competitor1 + ":")
 for ids in lists:
@@ -39,7 +40,7 @@ for ids in lists:
 file = open("options2.txt", "r")
 content = file.read()
 pokemon_dict = ast.literal_eval(content)
-lists = random.sample(list(pokemon_dict), 2)
+lists = random.sample(list(pokemon_dict), count)
 
 print("========================\n" + competitor2 + ":")
 for ids in lists:
