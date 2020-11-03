@@ -2,7 +2,7 @@
 
 Download the option files and script and execute it.
 
-The following modules are required and the script runs in set to run *Python3*.
+The following modules are required and the script is set to run in *Python3*.
 - random
 - ast
 - sys
