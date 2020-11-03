@@ -1,7 +1,0 @@
-Team test1: 
-Scorbunny,Fire
-Grookey,Grass
-Raboot,Fire
-Sobble,Water
-Cinderace,Fire
-Thwackey,Grass

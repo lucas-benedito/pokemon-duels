@@ -1,7 +1,0 @@
-Team test2: 
-Sobble,Water
-Drizzile,Water
-Inteleon,Water
-Rillaboom,Grass
-Scorbunny,Fire
-Cinderace,Fire
