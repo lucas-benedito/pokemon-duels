@@ -4,6 +4,8 @@ import ast
 import sys
 import os.path
 from os import path
+import shutil
+
 
 # preliminary checks
 checkQuit = False
@@ -24,26 +26,40 @@ if checkQuit:
     print(messageQuit)
     sys.exit(1)
 
+if sys.platform.startswith('win'):
+    pathDelimiter = '\\'
+else:
+    pathDelimiter = '/'
+
 # main
 count=6
+messageSplit = '========================\n'
 battle_type=['single', 'doubles']
-print("========================\nBattle Type: ",random.choice(battle_type))
-file = open("options.txt", "r")
-content = file.read()
-pokemon_dict = ast.literal_eval(content)
-lists = random.sample(list(pokemon_dict), count)
+print(messageSplit + "Battle Type: ",random.choice(battle_type) + "\n" + messageSplit)
 
-print("========================\n" + competitor1 + ":")
-for ids in lists:
-    print(pokemon_dict[ids])
+testDict = {'T1':['options.txt',competitor1], 'T2':['options2.txt',competitor2]}
+for valueIteration in ['T1', 'T2']:
+    messageOut = ""
+    file = open(testDict[valueIteration][0], "r")
+    content = file.read()
+    file.close()
+    pokemon_dict = ast.literal_eval(content)
+    print(pokemon_dict)
+    lists = random.sample(list(pokemon_dict), count)
+    print(lists)
+     
+    messageOut = messageOut + "Team " + testDict[valueIteration][1] + ": \n"
+    countLoop = 1
+    for ids in lists:
+        messageOut = messageOut + (pokemon_dict[ids][0]) + "\n"
+        fileFormat = pokemon_dict[ids][2]
+        original = 'sprites' + pathDelimiter + pokemon_dict[ids][1] + fileFormat
+        target = 'team' + pathDelimiter + valueIteration + 'P' + str(countLoop) + '.gif'
+        shutil.copyfile(original, target)
+        countLoop += 1
+        file = open('team/' + valueIteration + '.txt', 'w')
+        file.write(messageOut)
+        file.close
+    print(messageOut + messageSplit)
 
-file = open("options2.txt", "r")
-content = file.read()
-pokemon_dict = ast.literal_eval(content)
-lists = random.sample(list(pokemon_dict), count)
-
-print("========================\n" + competitor2 + ":")
-for ids in lists:
-    print(pokemon_dict[ids])
-
-print("========================\nHave Fun.\n========================")
+print('Have Fun.')
