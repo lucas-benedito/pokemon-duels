@@ -27,14 +27,19 @@ for directories in ['sprites', 'team']:
         messageQuit = messageQuit + "The directory " + directories + " doesn't exist. Please, create it and populate with the pokémon sprites.\n"
         checkQuit = True
 
-if checkQuit:
-    print(messageQuit)
-    sys.exit(1)
 
 if sys.platform.startswith('win'):
     pathDelimiter = "\\"
 else:
     pathDelimiter = '/'
+
+if not os.path.isfile('sprites' + pathDelimiter + '000.png'):
+    messageQuit = messageQuit + "The default sprite named \'000.png\' doesn't exist in sprites folder. Please add it to the directory and try again. \n"
+    checkQuit = True
+
+if checkQuit:
+    print(messageQuit)
+    sys.exit(1)
 
 # main
 count=6
