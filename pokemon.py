@@ -22,12 +22,17 @@ for options in ['options.txt','options2.txt']:
         messageQuit = messageQuit + "The file " + options + " doesn't exist, please create it and run again.\n"
         checkQuit = True
 
+for directories in ['sprites', 'team']:
+    if not os.path.isdir(directories):
+        messageQuit = messageQuit + "The directory " + directories + " doesn't exist. Please, create it and populate with the pokémon sprites.\n"
+        checkQuit = True
+
 if checkQuit:
     print(messageQuit)
     sys.exit(1)
 
 if sys.platform.startswith('win'):
-    pathDelimiter = '\\'
+    pathDelimiter = "\\"
 else:
     pathDelimiter = '/'
 
@@ -44,9 +49,7 @@ for valueIteration in ['T1', 'T2']:
     content = file.read()
     file.close()
     pokemon_dict = ast.literal_eval(content)
-    print(pokemon_dict)
     lists = random.sample(list(pokemon_dict), count)
-    print(lists)
      
     messageOut = messageOut + "Team " + testDict[valueIteration][1] + ": \n"
     countLoop = 1
@@ -55,9 +58,11 @@ for valueIteration in ['T1', 'T2']:
         fileFormat = pokemon_dict[ids][2]
         original = 'sprites' + pathDelimiter + pokemon_dict[ids][1] + fileFormat
         target = 'team' + pathDelimiter + valueIteration + 'P' + str(countLoop) + '.gif'
+        if not os.path.isfile(original):
+            original = 'sprites' + pathDelimiter + '000.png'
         shutil.copyfile(original, target)
         countLoop += 1
-        file = open('team/' + valueIteration + '.txt', 'w')
+        file = open('team' + pathDelimiter + valueIteration + '.txt', 'w')
         file.write(messageOut)
         file.close
     print(messageOut + messageSplit)
