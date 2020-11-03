@@ -8,9 +8,9 @@ The following modules are required and the script runs in set to run *Python3*.
 - sys
 - os
 
-create the following directories in the same as the script
-team
-sprites
+create the following directories in the same as the script.
+- team
+- sprites
 
 ### Example:
 ```
