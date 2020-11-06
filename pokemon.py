@@ -45,7 +45,12 @@ if checkQuit:
 count=6
 messageSplit = '========================\n'
 battle_type=['single', 'doubles']
-print(messageSplit + "Battle Type: ",random.choice(battle_type) + "\n" + messageSplit)
+battle_type_chice = random.choice(battle_type)
+print(messageSplit + "Battle Type: "+ battle_type_chice + "\n" + messageSplit)
+file = open('team' + pathDelimiter + 'battleType.txt', 'w')
+file.write(battle_type_chice)
+file.close
+
 
 testDict = {'T1':['options.txt',competitor1], 'T2':['options2.txt',competitor2]}
 for valueIteration in ['T1', 'T2']:
