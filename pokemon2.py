@@ -22,13 +22,13 @@ else:
 
 for options in ['options.xls', 'options2.xls']:
     if not path.isfile(options):
-        messageQuit = messageQuit + "The file " + options + " doesn't exist, please create it and run again.\n"
+        messageQuit = messageQuit + "The file " + options + " doesnt exist, please create it and run again.\n"
         checkQuit = True
 
 # Check if the necessary directories exist
 for directories in ['sprites', 'team']:
     if not os.path.isdir(directories):
-        messageQuit = messageQuit + "The directory " + directories + " doesn't exist. Please, create it and populate with the pokémon sprites.\n "
+        messageQuit = messageQuit + "The directory " + directories + " doesnt exist. Please, create it and populate with the pokemon sprites.\n "
         checkQuit = True
 
 # Set path Delimiter depending on the platform
@@ -61,16 +61,21 @@ for valueIteration in ['T1', 'T2']:
     messageOut = ""
     content = pd.read_excel(testDict[valueIteration][0], header=0)
     content = content.fillna('-')
-    print(content['Dex'].count())
     lists = random.sample(range(content['Dex'].count()), count)
     a = content.loc[lists, ['Nome', 'Apelido']]
     countLoop = 1
     for ids in lists:
         messageOut = messageOut + "Team " + testDict[valueIteration][1] + ": \n"
         messageOut = tabulate.tabulate(a, showindex=False)
-        original = 'sprites' + pathDelimiter + str(content['Dex'].loc[ids]) + '.png'
+        x = len(str(content['Dex'].loc[ids]))
+        dexid = str(content['Dex'].loc[ids])
+        if x < 3:
+            if x == 1:
+                dexid = '00' + dexid
+            else:
+                dexid = '0' + dexid
+        original = 'sprites' + pathDelimiter + dexid + '.png'
         target = 'team' + pathDelimiter + valueIteration + 'P' + str(countLoop) + '.png'
-        print(original)
         if not os.path.isfile(original):
             original = 'sprites' + pathDelimiter + '000.png'
         shutil.copyfile(original, target)
@@ -79,6 +84,6 @@ for valueIteration in ['T1', 'T2']:
         file.write(messageOut)
         file.close
     print(messageOut)
-    print()
+
 
 print('Have Fun.')
