@@ -20,12 +20,6 @@ else:
     competitor1 = sys.argv[1]
     competitor2 = sys.argv[2]
 
-# Verify if the input files exist
-for options in ['options.txt', 'options2.txt']:
-    if not path.isfile(options):
-        messageQuit = messageQuit + "The file " + options + " doesn't exist, please create it and run again.\n"
-        checkQuit = True
-
 for options in ['options.xls', 'options2.xls']:
     if not path.isfile(options):
         messageQuit = messageQuit + "The file " + options + " doesn't exist, please create it and run again.\n"
@@ -34,8 +28,7 @@ for options in ['options.xls', 'options2.xls']:
 # Check if the necessary directories exist
 for directories in ['sprites', 'team']:
     if not os.path.isdir(directories):
-        messageQuit = messageQuit + "The directory " + directories + " doesn't exist. Please, create it and populate " \
-                                                                     "with the pokémon sprites.\n "
+        messageQuit = messageQuit + "The directory " + directories + " doesn't exist. Please, create it and populate with the pokémon sprites.\n "
         checkQuit = True
 
 # Set path Delimiter depending on the platform
@@ -46,8 +39,7 @@ else:
 
 # Check if the default sprite file exist
 if not os.path.isfile('sprites' + pathDelimiter + '000.png'):
-    messageQuit = messageQuit + "The default sprite named \'000.png\' doesn't exist in sprites folder. Please add it " \
-                                "to the directory and try again. \n "
+    messageQuit = messageQuit + "The default sprite named \'000.png\' doesn't exist in sprites folder. Please add it to the directory and try again. \n "
     checkQuit = True
 
 # Quit script if any failure was encountered
@@ -69,6 +61,7 @@ for valueIteration in ['T1', 'T2']:
     messageOut = ""
     content = pd.read_excel(testDict[valueIteration][0], header=0)
     content = content.fillna('-')
+    print(content['Dex'].count())
     lists = random.sample(range(content['Dex'].count()), count)
     a = content.loc[lists, ['Nome', 'Apelido']]
     countLoop = 1
