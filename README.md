@@ -7,6 +7,9 @@ The following modules are required and the script is set to run in *Python3*.
 - ast
 - sys
 - os
+- pandas
+- tabulate
+- xlrd
 
 create the following directories in the same as the script.
 - team
