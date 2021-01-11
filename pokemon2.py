@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import random
 import sys
-import os.path
+import os
 from os import path
 import shutil
 import pandas as pd
 import tabulate
+import inquirer
 
 # preliminary checks
 # preliminary variables
@@ -20,8 +21,15 @@ else:
     competitor1 = sys.argv[1]
     competitor2 = sys.argv[2]
 
+# Set path Delimiter depending on the platform
+if sys.platform.startswith('win'):
+    pathDelimiter = "\\"
+else:
+    pathDelimiter = '/'
+
+# check if options files exist
 for options in ['options.xls', 'options2.xls']:
-    if not path.isfile(options):
+    if not os.path.isfile(options):
         messageQuit = messageQuit + "The file " + options + " doesnt exist, please create it and run again.\n"
         checkQuit = True
 
@@ -31,14 +39,15 @@ for directories in ['sprites', 'team']:
         messageQuit = messageQuit + "The directory " + directories + " doesnt exist. Please, create it and populate with the pokemon sprites.\n "
         checkQuit = True
 
-# Set path Delimiter depending on the platform
-if sys.platform.startswith('win'):
-    pathDelimiter = "\\"
-else:
-    pathDelimiter = '/'
+# Check if score files exist
+for scores in ['score1.txt', 'score2.txt']:
+    if not os.path.isfile('team' + pathDelimiter + scores):
+        fin = open('team' + pathDelimiter + scores, 'w+')
+        fin.write('0')
+        fin.close()
 
 # Check if the default sprite file exist
-if not os.path.isfile('sprites' + pathDelimiter + '000.png'):
+if not os.path.isfile('sprites' + pathDelimiter + '000.gif'):
     messageQuit = messageQuit + "The default sprite named \'000.png\' doesn't exist in sprites folder. Please add it to the directory and try again. \n "
     checkQuit = True
 
@@ -46,6 +55,20 @@ if not os.path.isfile('sprites' + pathDelimiter + '000.png'):
 if checkQuit:
     print(messageQuit)
     sys.exit(1)
+
+
+def sumScores(winner):
+    fout = open('team' + pathDelimiter + winner + '.txt', 'rt')
+    scoreSum = fout.read()
+    fout.close()
+    scoreSum = int(scoreSum)
+    print(scoreSum)
+    scoreSum += 1
+    print(scoreSum)
+    fout = open('team' + pathDelimiter + winner + '.txt', 'w+')
+    fout.write(str(scoreSum))
+    fout.close()
+
 
 # main
 # Global Variables
@@ -56,6 +79,9 @@ header = ["Dex", "Nome", "Apelido"]
 battle_type = ['single', 'doubles']
 battle_type_choice = random.choice(battle_type)
 print("Battle Type: " + battle_type_choice + "\n")
+file = open('team' + pathDelimiter + 'battleType.txt', 'w')
+file.write(battle_type_choice)
+file.close
 testDict = {'T1': ['options.xls', competitor1], 'T2': ['options2.xls', competitor2]}
 for valueIteration in ['T1', 'T2']:
     messageOut = ""
@@ -74,16 +100,31 @@ for valueIteration in ['T1', 'T2']:
                 dexid = '00' + dexid
             else:
                 dexid = '0' + dexid
-        original = 'sprites' + pathDelimiter + dexid + '.png'
-        target = 'team' + pathDelimiter + valueIteration + 'P' + str(countLoop) + '.png'
-        if not os.path.isfile(original):
-            original = 'sprites' + pathDelimiter + '000.png'
+        original = 'sprites' + pathDelimiter + dexid + '.gif'
+        if path.isfile(original):
+            fformat = '.gif'
+        else:
+            fformat = '.png'
+            original = 'sprites' + pathDelimiter + dexid + fformat
+        target = 'team' + pathDelimiter + valueIteration + 'P' + str(countLoop) + '.gif'
+        if not path.isfile(original):
+            original = 'sprites' + pathDelimiter + '000.gif'
         shutil.copyfile(original, target)
         countLoop += 1
         file = open('team' + pathDelimiter + valueIteration + '.txt', 'w')
         file.write(messageOut)
         file.close
     print(messageOut)
-
+questions = [
+    inquirer.List('score',
+                  message="Who won the fight?",
+                  choices=['Team 1', 'Team 2']
+                  ),
+]
+answers = inquirer.prompt(questions)
+if answers['score'] == 'Team 1':
+    sumScores('score1')
+else:
+    sumScores('score2')
 
 print('Have Fun.')
