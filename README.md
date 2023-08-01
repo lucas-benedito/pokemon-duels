@@ -41,7 +41,7 @@ Windows
 ```
 
 ```
-> python .\pokemon2.py Klonoa Red
+> python .\pokemon.py Klonoa Red
 Battle Type: single
 
 Team Klonoa: 
