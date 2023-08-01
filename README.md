@@ -8,8 +8,9 @@ Create the Virtualenv and install the packages
 On linux:
 ```
 python3 -m venv venv
-venv/bin/pip install --upgrade pip
-venv/bin/pip install -r requirements.txt
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
 On windows:
@@ -28,6 +29,16 @@ Make sure the sprites directory exists with the desired sprites
 - run the script with the syntax `python ./pokemon.py player1 player2`
 
     **Note: player1 and player2 data will be read from options.xls and options2.xls respectively**
+
+Activate the virtualenv
+Linux
+```
+> source venv/bin/activate
+```
+Windows
+```
+.\venv\Scripts\activate
+```
 
 ```
 > python .\pokemon2.py Klonoa Red
