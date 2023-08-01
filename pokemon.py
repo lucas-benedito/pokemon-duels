@@ -137,7 +137,7 @@ def read_team(team_data, team):
                 dexid = "00" + dexid
             else:
                 dexid = "0" + dexid
-            find_sprite(dexid, team, count_loop)
+        find_sprite(dexid, team, count_loop)
         count_loop += 1
     with open("team" + PATH_DELIMITER + team + ".txt", "w", encoding="utf-8") as file:
         file.write(message_out)
