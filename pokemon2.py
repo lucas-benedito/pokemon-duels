@@ -91,6 +91,19 @@ def sum_scores(winner):
         fout.write(str(sum_score))
 
 
+def read_score():
+    """
+    Read the current score and show to the user
+    """
+    score_return = []
+    for score_file in ["score1", "score2"]:
+        with open(
+            "team" + PATH_DELIMITER + score_file + ".txt", "r", encoding="utf-8"
+        ) as fout:
+            score_return.append(fout.read())
+    return score_return
+
+
 def battle_type():
     """
     defining the battle type
@@ -174,6 +187,12 @@ def main():
         sum_scores("score1")
     else:
         sum_scores("score2")
+    current_score = read_score()
+    print(
+        f"Current Score: \n\
+{my_players['T1'][1]}: {current_score[0]}\n\
+{my_players['T2'][1]}: {current_score[1]}\n"
+    )
 
     print("Have Fun.")
 
