@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+Pokemon battle generator
+"""
 import random
 import sys
 import os
@@ -8,142 +11,176 @@ import pandas as pd
 import tabulate
 import inquirer
 
-# preliminary checks
-# preliminary variables
-checkQuit = False
-messageQuit = "\n"
 
-# check fi the arguments were passed to the script
-if len(sys.argv) < 3:
-    messageQuit = (
-        messageQuit
-        + "Missing competitors names.\nUsage: "
-        + sys.argv[0]
-        + " competitor1 competitor2.\n\n"
-    )
-    checkQuit = True
-else:
-    competitor1 = sys.argv[1]
-    competitor2 = sys.argv[2]
+def can_run():
+    """
+    Function to define if we are able to run the code
+    """
+    check = False
+    message_quit = "\n"
+    competitor1 = ""
+    competitor2 = ""
 
-# Set path Delimiter depending on the platform
-if sys.platform.startswith("win"):
-    pathDelimiter = "\\"
-else:
-    pathDelimiter = "/"
-
-# check if options files exist
-for options in ["options.xls", "options2.xls"]:
-    if not os.path.isfile(options):
-        messageQuit = (
-            messageQuit
-            + "The file "
-            + options
-            + " doesnt exist, please create it and run again.\n"
+    # check fi the arguments were passed to the script
+    if len(sys.argv) < 3:
+        print(
+            f"""
+Missing competitors names.
+Usage: {sys.argv[0]} competitor1 competitor2.\n\n
+        """
         )
-        checkQuit = True
+        check = True
+    else:
+        competitor1 = sys.argv[1]
+        competitor2 = sys.argv[2]
 
-# Check if the necessary directories exist
-for directories in ["sprites", "team"]:
-    if not os.path.isdir(directories):
-        messageQuit = (
-            messageQuit
-            + "The directory "
-            + directories
-            + " doesnt exist. Please, create it and populate with the pokemon sprites.\n "
+    # check if options files exist
+    for options in ["options.xls", "options2.xls"]:
+        if not os.path.isfile(options):
+            print(
+                f"""
+                The file {options} doesnt exist, please create it and run again.\n
+            """
+            )
+            check = True
+
+    # Check if the necessary directories exist
+    if not os.path.isdir("sprites"):
+        print(
+            "The directory sprites doesnt exist. Please, \
+create it and populate with the pokemon sprites.\n"
         )
-        checkQuit = True
+        check = True
 
-# Check if score files exist
-for scores in ["score1.txt", "score2.txt"]:
-    if not os.path.isfile("team" + pathDelimiter + scores):
-        fin = open("team" + pathDelimiter + scores, "w+")
-        fin.write("0")
-        fin.close()
+    if not os.path.isdir("team"):
+        try:
+            os.makedirs("team")
+            # Check if score files exist
+            for scores in ["score1.txt", "score2.txt"]:
+                if not os.path.isfile("team" + PATH_DELIMITER + scores):
+                    with open(
+                        "team" + PATH_DELIMITER + scores, "w", encoding="utf-8"
+                    ) as file:
+                        file.write("0")
+        except OSError as error:
+            print("Failed to create dirs", error)
 
-# Check if the default sprite file exist
-if not os.path.isfile("sprites" + pathDelimiter + "000.gif"):
-    messageQuit = (
-        messageQuit
-        + "The default sprite named '000.png' doesn't exist in sprites folder. Please add it to the directory and try again. \n "
-    )
-    checkQuit = True
+    # Check if the default sprite file exist
+    if not os.path.isfile("sprites" + PATH_DELIMITER + "000.png"):
+        print(
+            "The default sprite named '000.png' doesn't exist in sprites folder. \
+Please add it to the directory and try again.\n"
+        )
+        check = True
 
-# Quit script if any failure was encountered
-if checkQuit:
-    print(messageQuit)
-    sys.exit(1)
+    # Quit script if any failure was encountered
+    if check:
+        print(message_quit)
+        sys.exit(1)
+    return competitor1, competitor2
 
 
-def sumScores(winner):
-    fout = open("team" + pathDelimiter + winner + ".txt", "rt")
-    scoreSum = fout.read()
-    fout.close()
-    scoreSum = int(scoreSum)
-    print(scoreSum)
-    scoreSum += 1
-    print(scoreSum)
-    fout = open("team" + pathDelimiter + winner + ".txt", "w+")
-    fout.write(str(scoreSum))
-    fout.close()
+def sum_scores(winner):
+    """
+    Function to save the scores
+    """
+    with open("team" + PATH_DELIMITER + winner + ".txt", "r", encoding="utf-8") as fout:
+        sum_score = fout.read()
+        sum_score = int(sum_score) + 1
+    with open("team" + PATH_DELIMITER + winner + ".txt", "w", encoding="utf-8") as fout:
+        fout.write(str(sum_score))
+
+
+def battle_type():
+    """
+    defining the battle type
+    """
+    # Set battle type
+    b_type = ["single", "doubles"]
+    b_type_choice = random.choice(b_type)
+    with open(
+        "team" + PATH_DELIMITER + "battleType.txt", "w", encoding="utf-8"
+    ) as file:
+        file.write(b_type_choice)
+    print(f"Battle Type: {b_type_choice}\n")
+
+
+def read_team(team_data, team):
+    """
+    Generate Team data
+    """
+    count = 6
+    content = pd.read_excel(team_data[0], header=0)
+    content = content.fillna("-")
+    selected = random.sample(range(content["Dex"].count()), count)
+    selected_data = content.loc[selected, ["Nome", "Apelido"]]
+    count_loop = 1
+    for ids in selected:
+        message_out = tabulate.tabulate(selected_data, showindex=False)
+        ids_it = len(str(content["Dex"].loc[ids]))
+        dexid = str(content["Dex"].loc[ids])
+        if ids_it < 3:
+            if ids_it == 1:
+                dexid = "00" + dexid
+            else:
+                dexid = "0" + dexid
+            find_sprite(dexid, team, count_loop)
+        count_loop += 1
+    with open("team" + PATH_DELIMITER + team + ".txt", "w", encoding="utf-8") as file:
+        file.write(message_out)
+    print(f"Team {team_data[1]}: \n{message_out}")
+
+
+def find_sprite(dexid, team, count_loop):
+    """
+    Manage sprites
+    """
+    if path.isfile("sprites" + PATH_DELIMITER + dexid + ".gif"):
+        fformat = ".gif"
+    else:
+        fformat = ".png"
+    src_folder = "sprites" + PATH_DELIMITER + dexid + fformat
+    tgt_folder = "team" + PATH_DELIMITER + team + "P" + str(count_loop) + ".gif"
+    if not path.isfile(src_folder):
+        src_folder = "sprites" + PATH_DELIMITER + "000.png"
+    try:
+        shutil.copyfile(src_folder, tgt_folder)
+    except OSError as error:
+        print("Unable to copy file.\n", error)
 
 
 def main():
-    # main
-    # Global Variables
-    count = 6
-    header = ["Dex", "Nome", "Apelido"]
+    """
+    Main function
+    """
+    competitor1, competitor2 = can_run()
 
-    # Set battle type
-    battle_type = ["single", "doubles"]
-    battle_type_choice = random.choice(battle_type)
-    print("Battle Type: " + battle_type_choice + "\n")
-    file = open("team" + pathDelimiter + "battleType.txt", "w")
-    file.write(battle_type_choice)
-    file.close
-    testDict = {"T1": ["options.xls", competitor1], "T2": ["options2.xls", competitor2]}
-    for valueIteration in ["T1", "T2"]:
-        messageOut = ""
-        content = pd.read_excel(testDict[valueIteration][0], header=0)
-        content = content.fillna("-")
-        lists = random.sample(range(content["Dex"].count()), count)
-        a = content.loc[lists, ["Nome", "Apelido"]]
-        countLoop = 1
-        for ids in lists:
-            messageOut = messageOut + "Team " + testDict[valueIteration][1] + ": \n"
-            messageOut = tabulate.tabulate(a, showindex=False)
-            x = len(str(content["Dex"].loc[ids]))
-            dexid = str(content["Dex"].loc[ids])
-            if x < 3:
-                if x == 1:
-                    dexid = "00" + dexid
-                else:
-                    dexid = "0" + dexid
-            original = "sprites" + pathDelimiter + dexid + ".gif"
-            if path.isfile(original):
-                fformat = ".gif"
-            else:
-                fformat = ".png"
-                original = "sprites" + pathDelimiter + dexid + fformat
-            target = "team" + pathDelimiter + valueIteration + "P" + str(countLoop) + ".gif"
-            if not path.isfile(original):
-                original = "sprites" + pathDelimiter + "000.gif"
-            shutil.copyfile(original, target)
-            countLoop += 1
-            file = open("team" + pathDelimiter + valueIteration + ".txt", "w")
-            file.write(messageOut)
-            file.close
-        print(messageOut)
+    battle_type()
+
+    my_players = {
+        "T1": ["options.xls", competitor1],
+        "T2": ["options2.xls", competitor2],
+    }
+    for team in ["T1", "T2"]:
+        read_team(my_players[team], team)
+
     questions = [
-        inquirer.List("score", message="Who won the fight?", choices=["Team 1", "Team 2"]),
+        inquirer.List(
+            "score", message="Who won the fight?", choices=["Team 1", "Team 2"]
+        ),
     ]
     answers = inquirer.prompt(questions)
     if answers["score"] == "Team 1":
-        sumScores("score1")
+        sum_scores("score1")
     else:
-        sumScores("score2")
+        sum_scores("score2")
 
     print("Have Fun.")
 
+
 if __name__ == "__main__":
+    if sys.platform.startswith("win"):
+        PATH_DELIMITER = "\\"
+    else:
+        PATH_DELIMITER = "/"
     main()
