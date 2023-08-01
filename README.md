@@ -40,6 +40,7 @@ Windows
 .\venv\Scripts\activate
 ```
 
+Run the script:
 ```
 > python .\pokemon.py Klonoa Red
 Battle Type: single
